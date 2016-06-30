@@ -49,6 +49,7 @@ def geoip(ip_address):
         ip_from__lte=ip_address,
         ip_to__gt=ip_address
     )
+    print(location._query)
     return location
 
 

@@ -38,6 +38,7 @@ class IpLocation(me.Document):
     lon = me.FloatField()
 
     meta = {
+        "collection": "ip_locations",
         "indexes": [
            {"fields": ["ip_to"]}
         ]
