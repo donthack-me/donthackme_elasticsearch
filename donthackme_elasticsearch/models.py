@@ -31,7 +31,7 @@ class IpLocation(me.Document):
     ip_from = me.LongField()
     ip_to = me.LongField()
     country_code = me.StringField()
-    country_name = me.StringFiled()
+    country_name = me.StringField()
     region_name = me.StringField()
     city_name = me.StringField()
     lat = me.FloatField()
