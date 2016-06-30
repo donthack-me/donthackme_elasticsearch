@@ -12,6 +12,7 @@ import socket
 import time
 import yaml
 
+from datetime import datetime
 
 from mongoengine import connect
 from elasticsearch import Elasticsearch
@@ -49,7 +50,7 @@ def geoip(ip_address):
         ip_from__lte=ip_address,
         ip_to__gt=ip_address
     )
-    print(location._query)
+
     return location
 
 
@@ -95,7 +96,7 @@ class TransLogReader(object):
         """Process a TransactionLog object."""
         doc_class = collection_map[log["collection"]]
         item = doc_class.objects.get(id=log["doc_id"]).to_dict()
-        print(item)
+
         if log["collection"] == "sensor":
             location = geoip(item["ip"])
             item["country"] = location.country_name
@@ -115,7 +116,11 @@ class TransLogReader(object):
                 "lat": location.lat,
                 "lon": location.lon
             }
-        print(item)
+        print("{0}:  {1}  -  {2}".format(
+            str(datetime.utcnow(),
+            log["collection"],
+            log["doc_id"])
+        )
         for key in ["source_ip", "dest_ip"]:
             if key in item:
                 item[key] = self._ensure_ip(item[key])
@@ -141,7 +146,6 @@ class TransLogReader(object):
             cur = self.get_cursor(last_id)
             for msg in cur:
                 last_id = msg['ts']
-                print(msg)
                 self.process_trans_log(msg)
             time.sleep(0.1)
 
