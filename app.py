@@ -95,9 +95,14 @@ class TransLogReader(object):
     def process_trans_log(self, log):
         """Process a TransactionLog object."""
         doc_class = collection_map[log["collection"]]
-        item = doc_class.objects.get(id=log["doc_id"]).to_dict()
+        obj = doc_class.objects.get(id=log["doc_id"])
+        self.process_object(log["collection"], obj)
 
-        if log["collection"] == "sensor":
+    def process_object(self, collection_name, obj):
+        """Process a MongoEngine object."""
+        item = obj.to_dict()
+
+        if collection_name == "sensor":
             location = geoip(item["ip"])
             item["country"] = location.country_name
             item["region"] = location.region_name
@@ -106,7 +111,7 @@ class TransLogReader(object):
                 "lat": location.lat,
                 "lon": location.lon
             }
-        if log["collection"] == "session":
+        if collection_name == "session":
             item["timestamp"] = item["start_time"]
             location = geoip(item["source_ip"])
             item["country"] = location.country_name
@@ -117,17 +122,17 @@ class TransLogReader(object):
                 "lon": location.lon
             }
         print("{0}:  {1}  -  {2}".format(
-            str(datetime.utcnow(),
-            log["collection"],
-            log["doc_id"])
-        )
+            str(datetime.utcnow()),
+            collection_name,
+            str(obj.id)
+        ))
         for key in ["source_ip", "dest_ip"]:
             if key in item:
                 item[key] = self._ensure_ip(item[key])
         self.es.index(
             index=self.index,
-            doc_type=log["collection"],
-            id=str(log["doc_id"]),
+            doc_type=collection_name,
+            id=str(obj.id),
             body=item
         )
 
@@ -149,12 +154,24 @@ class TransLogReader(object):
                 self.process_trans_log(msg)
             time.sleep(0.1)
 
+    def import_collection(self, collection_name):
+        """Import collection en masse."""
+        cur = self.db[collection_name].find()
+        for msg in cur:
+            self.process_object(collection_name, msg)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", "-c", dest="config", type=str,
                         default="/etc/donthackme_elasticsearch/config.yml",
                         help="specify config location.")
+    parser.add_argument("--mass-import-collection", "-m", dest="collection",
+                        type=str, help="mass import a collection.")
     args = parser.parse_args()
     reader = TransLogReader(args.config)
-    reader.tail_log()
+    if args.collection:
+        print("mass importing collection: {0}".format(args.collection))
+        reader.import_collection(args.collection)
+    else:
+        reader.tail_log()
