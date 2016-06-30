@@ -96,13 +96,12 @@ class TransLogReader(object):
         """Process a TransactionLog object."""
         doc_class = collection_map[log["collection"]]
         obj = doc_class.objects.get(id=log["doc_id"])
-        item = obj.to_dict()
-        item["_id"] = obj.id
-        self.process_item(log["collection"], item)
+        self.process_object(log["collection"], obj)
 
-    def process_item(self, collection_name, item):
+    def process_object(self, collection_name, obj):
         """Process a MongoEngine object."""
-        item["doc_id"] = str(item.pop("_id"))
+        item = obj.to_dict()
+        item["doc_id"] = str(obj.id)
         if collection_name == "sensor":
             location = geoip(item["ip"])
             item["country"] = location.country_name
@@ -157,7 +156,8 @@ class TransLogReader(object):
 
     def import_collection(self, collection_name):
         """Import collection en masse."""
-        cur = self.db[collection_name].find()
+        doc_class = collection_map[collection_name]
+        cur = doc_class.objects()
         for msg in cur:
             self.process_item(collection_name, msg)
 
