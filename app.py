@@ -45,7 +45,7 @@ def geoip(ip_address):
     """Geolocate IP."""
     location = IpLocation.objects.get(
         ip_from__lte=ip_address,
-        ip_to__gte=ip_address
+        ip_to__gt=ip_address
     )
     return location
 
