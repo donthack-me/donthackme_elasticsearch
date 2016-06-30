@@ -25,9 +25,14 @@ from donthackme_elasticsearch.models import (collection_map,
 
 from pymongo import CursorType
 
+from celery import Celery
+
+from celery.contrib.methods import task_method
 
 logging.basicConfig(format="%(asctime)s - %(levelname)s : %(message)s",
                     level=logging.INFO)
+
+app = Celery("app", broker="redis://localhost:6379/0")
 
 
 def config(configfile):
@@ -92,12 +97,14 @@ class TransLogReader(object):
         es_config["ca_certs"] = certifi.where()
         return es_config
 
+    @app.task(filter=task_method)
     def process_trans_log(self, log):
         """Process a TransactionLog object."""
         doc_class = collection_map[log["collection"]]
         obj = doc_class.objects.get(id=log["doc_id"])
         self.process_object(log["collection"], obj)
 
+    @app.task(filter=task_method)
     def process_object(self, collection_name, obj):
         """Process a MongoEngine object."""
         item = obj.to_dict()
@@ -151,7 +158,7 @@ class TransLogReader(object):
             cur = self.get_cursor(last_id)
             for msg in cur:
                 last_id = msg['ts']
-                self.process_trans_log(msg)
+                self.process_trans_log.delay(msg)
             time.sleep(0.1)
 
     def import_collection(self, collection_name):
@@ -159,7 +166,7 @@ class TransLogReader(object):
         doc_class = collection_map[collection_name]
         cur = doc_class.objects()
         for msg in cur:
-            self.process_item(collection_name, msg)
+            self.process_object.delay(collection_name, msg)
 
 
 if __name__ == "__main__":
