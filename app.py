@@ -6,6 +6,7 @@ from __future__ import print_function
 import argparse
 import certifi
 import logging
+import netaddr
 import sys
 import socket
 import time
@@ -43,6 +44,7 @@ def config(configfile):
 
 def geoip(ip_address):
     """Geolocate IP."""
+    ip_address = int(netaddr.IPAddress(ip_address))
     location = IpLocation.objects.get(
         ip_from__lte=ip_address,
         ip_to__gt=ip_address
