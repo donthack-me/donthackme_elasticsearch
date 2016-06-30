@@ -102,7 +102,7 @@ class TransLogReader(object):
 
     def process_item(self, collection_name, item):
         """Process a MongoEngine object."""
-        item["_id"] = str(item["_id"])
+        item["doc_id"] = str(item.pop("_id"))
         if collection_name == "sensor":
             location = geoip(item["ip"])
             item["country"] = location.country_name
@@ -125,7 +125,7 @@ class TransLogReader(object):
         print("{0}:  {1}  -  {2}".format(
             str(datetime.utcnow()),
             collection_name,
-            item["_id"]
+            item["doc_id"]
         ))
         for key in ["source_ip", "dest_ip"]:
             if key in item:
@@ -133,7 +133,7 @@ class TransLogReader(object):
         self.es.index(
             index=self.index,
             doc_type=collection_name,
-            id=item["_id"],
+            id=item["doc_id"],
             body=item
         )
 
