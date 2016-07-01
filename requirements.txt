@@ -1,4 +1,5 @@
 certifi
+celery
 requests
 pyyaml
 mongoengine
