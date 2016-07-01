@@ -28,8 +28,8 @@ def config(configfile):
         with open(configfile, 'r') as f:
             conf = yaml.load(f)
     except IOError:
-        # msg = "Could not open config file: {0}"
-        # logging.info(msg.format(configfile))
+        msg = "Could not open config file: {0}"
+        logging.info(msg.format(configfile))
         sys.exit(1)
     else:
         return conf
@@ -57,6 +57,7 @@ class TransLogReader(object):
 
     def tail_log(self):
         """Main log tailing function."""
+        logging.info("Began log tailing.")
         last_id = -1
         while True:
             cur = self.get_cursor(last_id)
