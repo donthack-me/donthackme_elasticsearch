@@ -79,7 +79,7 @@ def process_trans_log(log):
 
 
 @app.task
-def process_object(es_object, index_name, collection_name, obj):
+def process_object(collection_name, obj):
     """Process a MongoEngine object."""
     item = obj.to_dict()
     item["doc_id"] = str(obj.id)
@@ -111,7 +111,7 @@ def process_object(es_object, index_name, collection_name, obj):
         if key in item:
             item[key] = _ensure_ip(item[key])
     es.index(
-        index=index_name,
+        index=conf["index"],
         doc_type=collection_name,
         id=item["doc_id"],
         body=item
