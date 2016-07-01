@@ -54,7 +54,7 @@ app = Celery("tasks", broker=conf["celery"]["broker"])
 def _geoip(ip_address):
     """Geolocate IP."""
     ip_address = int(netaddr.IPAddress(ip_address))
-    location = IpLocation.objects.get(
+    location = IpLocation.objects(
         ip_from__lte=ip_address,
         ip_to__gt=ip_address
     ).first()
