@@ -95,10 +95,10 @@ def process_object(collection_name, obj):
     if collection_name == "session":
         item["timestamp"] = item["start_time"]
         location = _geoip(item["source_ip"])
-        item["country"] = location.country_name
-        item["region"] = location.region_name
-        item["city"] = location.city_name
-        item["location"] = {
+        item["src_country"] = location.country_name
+        item["src_region"] = location.region_name
+        item["src_city"] = location.city_name
+        item["src_location"] = {
             "lat": location.lat,
             "lon": location.lon
         }
