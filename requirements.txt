@@ -1,6 +1,7 @@
 certifi
 celery
 requests
+redis
 pyyaml
 mongoengine
 netaddr
