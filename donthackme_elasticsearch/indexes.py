@@ -203,7 +203,8 @@ donthackme_mappings = {
                             "index": "not_analyzed"
                         },
                         "asciicast": {
-                            "type": "dynamic"
+                            "type": "object",
+                            "enabled": False
                         },
                         "asciinema_url": {
                             "type": "string",

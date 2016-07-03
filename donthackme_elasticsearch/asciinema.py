@@ -45,13 +45,15 @@ def convert_log(obj):
     """
     fd = io.BytesIO(obj.ttylog.log_binary)
 
+    title = "Cowrie Recording: {0}_{1}"
+
     thelog = {}
     thelog['version'] = 1
     thelog['width'] = 80
     thelog['height'] = 24
     thelog['duration'] = 0.0
     thelog['command'] = "/bin/bash"
-    thelog['title'] = "Cowrie Recording"
+    thelog['title'] = title.format(obj.session, obj.sensor_name)
     theenv = {}
     theenv['TERM'] = "xterm256-color"
     theenv['SHELL'] = "/bin/bash"
