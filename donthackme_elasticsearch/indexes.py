@@ -202,9 +202,15 @@ donthackme_mappings = {
                             "type": "string",
                             "index": "not_analyzed"
                         },
-                        "log_binary": {
-                            "type": "binary",
+                        "asciicast": {
+                            "type": "dynamic"
+                        },
+                        "asciinema_url": {
+                            "type": "string",
                             "index": "not_analyzed"
+                        },
+                        "log_binary": {
+                            "type": "binary"
                         }
                     }
                 },
@@ -220,7 +226,7 @@ donthackme_mappings = {
                     "fields": {
                         "raw": {"type": "string", "index": "not_analyzed"}
                     }
-                },
+                }
             }
         }
     }

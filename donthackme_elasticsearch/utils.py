@@ -20,15 +20,11 @@ import yaml
 
 def _config(configfile):
     """Parse Yaml Config File."""
-    try:
-        with open(configfile, 'r') as f:
-            conf = yaml.load(f)
-    except IOError:
-        # msg = "Could not open config file: {0}"
-        # logging.info(msg.format(configfile))
-        sys.exit(1)
-    else:
-        return conf
+
+    with open(configfile, 'r') as f:
+        conf = yaml.load(f)
+
+    return conf
 
 
 def _prepare_es_config(es_config):

@@ -29,6 +29,9 @@ from donthackme_elasticsearch.indexes import donthackme_mappings
 from donthackme_elasticsearch.models import (collection_map,
                                              IpLocation)
 
+from donthackme_elasticsearch.asciinema import (convert_log,
+                                                upload_file)
+
 try:
     configfile = os.environ["ESPUSH_CELERY_CONFIG"]
 except KeyError:
@@ -102,6 +105,8 @@ def process_object(collection_name, obj):
             "lat": location.lat,
             "lon": location.lon
         }
+        if "ttylog" in item:
+            process_ttylog.delay(collection_name, obj, item)
     print("{0}:  {1}  -  {2}".format(
         str(datetime.utcnow()),
         collection_name,
@@ -110,6 +115,28 @@ def process_object(collection_name, obj):
     for key in ["source_ip", "dest_ip"]:
         if key in item:
             item[key] = _ensure_ip(item[key])
+    es.index(
+        index=conf["index"],
+        doc_type=collection_name,
+        id=item["doc_id"],
+        body=item
+    )
+
+
+@app.task
+def process_ttylog(collection_name, obj, item):
+    """Process the upload of ttylog."""
+    outfp, thelog = convert_log(obj)
+    item["ttylog"]["asciicast"] = thelog
+
+    if obj.ttylog.size > 500:
+        log_url = upload_file(
+            outfp,
+            conf["asciinema"]["username"],
+            conf["asciinema"]["token"]
+        )
+        item["ttylog"]["asciinema_url"] = log_url
+
     es.index(
         index=conf["index"],
         doc_type=collection_name,
