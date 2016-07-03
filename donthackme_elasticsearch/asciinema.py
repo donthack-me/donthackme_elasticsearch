@@ -43,7 +43,7 @@ def convert_log(obj):
     There is quite a bit of hackery with the StringIO and BytesIO objects
     to fake files in memory.
     """
-    fd = io.BytesIO(sess.ttylog.log_binary)
+    fd = io.BytesIO(obj.ttylog.log_binary)
 
     thelog = {}
     thelog['version'] = 1
