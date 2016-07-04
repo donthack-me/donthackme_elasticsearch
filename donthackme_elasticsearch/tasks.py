@@ -135,6 +135,7 @@ def process_ttylog(collection_name, obj, item, upload_asciinema=True):
     """Process the upload of ttylog."""
     outfp, thelog = convert_log(obj)
     item["ttylog"]["asciicast"] = thelog
+    log_url = None
 
     if obj.ttylog.size > 1500 and upload_asciinema:
         log_url = upload_file(
@@ -143,6 +144,13 @@ def process_ttylog(collection_name, obj, item, upload_asciinema=True):
             conf["asciinema"]["token"]
         )
         item["ttylog"]["asciinema_url"] = log_url
+
+    print("{0}:  {1}  -  {2} - asciinema_url: {3}".format(
+        str(datetime.utcnow()),
+        collection_name,
+        item["doc_id"],
+        log_url
+    ))
 
     es.index(
         index=conf["index"],
