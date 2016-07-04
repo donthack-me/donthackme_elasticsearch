@@ -105,13 +105,13 @@ def process_object(collection_name, obj, upload_asciinema=True):
             "lat": location.lat,
             "lon": location.lon
         }
-        if "ttylog" in item:
-            process_ttylog.delay(
-                collection_name,
-                obj,
-                item,
-                upload_asciinema=upload_asciinema
-            )
+        # if "ttylog" in item:
+        #     process_ttylog.delay(
+        #         collection_name,
+        #         obj,
+        #         item,
+        #         upload_asciinema=upload_asciinema
+        #     )
     print("{0}:  {1}  -  {2}".format(
         str(datetime.utcnow()),
         collection_name,
