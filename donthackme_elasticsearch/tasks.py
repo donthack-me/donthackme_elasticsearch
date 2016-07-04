@@ -105,13 +105,15 @@ def process_object(collection_name, obj, upload_asciinema=True):
             "lat": location.lat,
             "lon": location.lon
         }
-        # if "ttylog" in item:
-        #     process_ttylog.delay(
-        #         collection_name,
-        #         obj,
-        #         item,
-        #         upload_asciinema=upload_asciinema
-        #     )
+        if "ttylog" in item and \
+                "end_time" in item and \
+                item["ttylog"]["size"] > 300:
+            process_ttylog.delay(
+                collection_name,
+                obj,
+                item,
+                upload_asciinema=upload_asciinema
+            )
     print("{0}:  {1}  -  {2}".format(
         str(datetime.utcnow()),
         collection_name,
@@ -131,21 +133,20 @@ def process_object(collection_name, obj, upload_asciinema=True):
 @app.task
 def process_ttylog(collection_name, obj, item, upload_asciinema=True):
     """Process the upload of ttylog."""
-    # outfp, thelog = convert_log(obj)
-    # item["ttylog"]["asciicast"] = thelog
+    outfp, thelog = convert_log(obj)
+    item["ttylog"]["asciicast"] = thelog
 
-    # if obj.ttylog.size > 500 and upload_asciinema:
-    #     log_url = upload_file(
-    #         outfp,
-    #         conf["asciinema"]["username"],
-    #         conf["asciinema"]["token"]
-    #     )
-    #     item["ttylog"]["asciinema_url"] = log_url
+    if obj.ttylog.size > 1500 and upload_asciinema:
+        log_url = upload_file(
+            outfp,
+            conf["asciinema"]["username"],
+            conf["asciinema"]["token"]
+        )
+        item["ttylog"]["asciinema_url"] = log_url
 
-    # es.index(
-    #     index=conf["index"],
-    #     doc_type=collection_name,
-    #     id=item["doc_id"],
-    #     body=item
-    # )
-    pass
+    es.index(
+        index=conf["index"],
+        doc_type=collection_name,
+        id=item["doc_id"],
+        body=item
+    )

@@ -71,7 +71,7 @@ class TransLogReader(object):
         doc_class = collection_map[collection_name]
         cur = doc_class.objects()
         for msg in cur:
-            process_object.delay(collection_name, msg)
+            process_object.delay(collection_name, msg, upload_asciinema=False)
 
 
 if __name__ == "__main__":
