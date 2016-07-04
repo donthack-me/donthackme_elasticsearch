@@ -51,14 +51,13 @@ class TransLogReader(object):
         """Create cursor object based on last_id."""
         spec = {'ts': {'$gt': last_id}}
         cur = self.logs.find(spec,
-                             cursor_type=CursorType.TAILABLE_AWAIT,
-                             oplog_replay=True)
+                             cursor_type=CursorType.TAILABLE_AWAIT)
         return cur
 
     def tail_log(self):
         """Main log tailing function."""
         logging.info("Began log tailing.")
-        last_id = -1
+        last_id = 80000
         while True:
             cur = self.get_cursor(last_id)
             for msg in cur:
