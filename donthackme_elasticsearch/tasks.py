@@ -13,9 +13,12 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import os
+import json
 import netaddr
 import socket
+
+import os
+import sys
 
 from celery import Celery
 from datetime import datetime
@@ -37,6 +40,8 @@ try:
 except KeyError:
     print("Please set config file location in env:ESPUSH_CELERY_CONFIG")
 
+reload(sys)
+sys.setdefaultencoding('utf8')
 
 conf = _config(configfile)
 
@@ -134,7 +139,7 @@ def process_object(collection_name, obj, upload_asciinema=True):
 def process_ttylog(collection_name, obj, item, upload_asciinema=True):
     """Process the upload of ttylog."""
     outfp, thelog = convert_log(obj)
-    item["ttylog"]["asciicast"] = thelog
+    item["ttylog"]["asciicast"] = json.dumps(thelog, indent=4)
     log_url = None
 
     if obj.ttylog.size > 1500 and upload_asciinema:
