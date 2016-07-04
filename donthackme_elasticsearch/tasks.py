@@ -82,7 +82,7 @@ def process_trans_log(log):
 
 
 @app.task
-def process_object(collection_name, obj):
+def process_object(collection_name, obj, upload_asciinema=True):
     """Process a MongoEngine object."""
     item = obj.to_dict()
     item["doc_id"] = str(obj.id)
@@ -106,7 +106,12 @@ def process_object(collection_name, obj):
             "lon": location.lon
         }
         if "ttylog" in item:
-            process_ttylog.delay(collection_name, obj, item)
+            process_ttylog.delay(
+                collection_name,
+                obj,
+                item,
+                upload_asciinema=upload_asciinema
+            )
     print("{0}:  {1}  -  {2}".format(
         str(datetime.utcnow()),
         collection_name,
@@ -124,12 +129,12 @@ def process_object(collection_name, obj):
 
 
 @app.task
-def process_ttylog(collection_name, obj, item):
+def process_ttylog(collection_name, obj, item, upload_asciinema=True):
     """Process the upload of ttylog."""
     outfp, thelog = convert_log(obj)
     item["ttylog"]["asciicast"] = thelog
 
-    if obj.ttylog.size > 500:
+    if obj.ttylog.size > 500 and upload_asciinema:
         log_url = upload_file(
             outfp,
             conf["asciinema"]["username"],
