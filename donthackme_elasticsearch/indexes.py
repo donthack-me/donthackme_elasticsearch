@@ -87,7 +87,7 @@ donthackme_mappings = {
                         "raw": {"type": "string", "index": "not_analyzed"}
                     }
                 },
-                "success": {"type": "boolean"},
+                "success": {"type": "boolean"}
             }
         },
         "fingerprint": {
@@ -200,15 +200,30 @@ donthackme_mappings = {
                         "size": {"type": "integer"},
                         "log_location": {
                             "type": "string",
-                            "index": "not_analyzed"
+                            "fields": {
+                                "raw": {
+                                    "type": "string",
+                                    "index": "not_analyzed"
+                                }
+                            }
                         },
                         "asciicast": {
-                            "type": "object",
-                            "enabled": False
+                            "type": "string",
+                            "fields": {
+                                "raw": {
+                                    "type": "string",
+                                    "index": "not_analyzed"
+                                }
+                            }
                         },
                         "asciinema_url": {
                             "type": "string",
-                            "index": "not_analyzed"
+                            "fields": {
+                                "raw": {
+                                    "type": "string",
+                                    "index": "not_analyzed"
+                                }
+                            }
                         },
                         "log_binary": {
                             "type": "binary"
