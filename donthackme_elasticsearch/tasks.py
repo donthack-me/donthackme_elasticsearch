@@ -142,13 +142,13 @@ def process_ttylog(collection_name, obj, item, upload_asciinema=True):
     item["ttylog"]["asciicast"] = json.dumps(thelog, indent=4)
     log_url = None
 
-    if obj.ttylog.size > 3000 and upload_asciinema:
-        log_url = upload_file(
-            outfp,
-            conf["asciinema"]["username"],
-            conf["asciinema"]["token"]
-        )
-        item["ttylog"]["asciinema_url"] = log_url
+    # if obj.ttylog.size > 3000 and upload_asciinema:
+    #     log_url = upload_file(
+    #         outfp,
+    #         conf["asciinema"]["username"],
+    #         conf["asciinema"]["token"]
+    #     )
+    #     item["ttylog"]["asciinema_url"] = log_url
 
     print("{0}:  {1}  -  {2} - asciinema_url: {3}".format(
         str(datetime.utcnow()),
