@@ -86,6 +86,7 @@ def convert_log(obj):
                 curtime = curtime / 2
                 if prevtime != 0:
                     sleeptime = curtime - prevtime
+                prevtime = curtime
 
                 # rtrox: While playback works properly
                 #        with the asciinema client, upload
