@@ -6,3 +6,4 @@ pyyaml
 mongoengine
 netaddr
 elasticsearch
+python-dateutil
